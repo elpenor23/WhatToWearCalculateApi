@@ -8,6 +8,16 @@ public class ApiAccess
     {
         var result = "[{}]";
 
+        // For testing only
+        // var handler = new HttpClientHandler();
+        // handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        // handler.ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) =>
+        // {
+        //     return true;
+        // };
+
+        //using (var client = new HttpClient(handler))
+
         using (var client = httpClientFactory.CreateClient())
         {
             client.BaseAddress = new Uri(uri);

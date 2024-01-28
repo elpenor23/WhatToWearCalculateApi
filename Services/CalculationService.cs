@@ -1,5 +1,6 @@
 using WhatToWearCalculateApi.Models;
 using System.Text.Json;
+using WhatToWearCalculateApi.Utilities;
 
 namespace WhatToWearCalculateApi.Services;
 
@@ -14,7 +15,7 @@ public class CalculationService : ICalculationService
     }
     public async Task<List<IntensityClothing>> CalculateClothingAsync(double lat, double lon, int tempAdjust)
     {
-        var weather = await GetWeatherAsync(lat, lon);
+        var weather = await GetWeatherAsync(lat, lon) ?? throw new Exception("Unable to get Weather. Unknown Error.");
         var intensities = _configuration.GetSection("Intensities")?.GetChildren()?.Select(x => x.Value)?.ToList() ?? [];
         var returnData = await CalculateClothing(weather, intensities, tempAdjust);
         return returnData;
@@ -239,11 +240,11 @@ public class CalculationService : ICalculationService
 
     public async Task<WeatherItem?> GetWeatherAsync(double lat, double lon)
     {
-        // var openWeatherApiUri = string.Format(\"https://localhost:7194/weather?lat={0}&lon={1}\", lat, lon);
-        // var weatherData = await ApiAccess.GetApiJsonData(openWeatherApiUri, _httpClientFactory);
+        var openWeatherApiUri = string.Format("https://localhost:7194/weather?lat={0}&lon={1}", lat, lon);
+        var weatherData = await ApiAccess.GetApiJsonData(openWeatherApiUri, _httpClientFactory);
 
         //TODO: Change this back to calling the api
-        var weatherData = "{\"id\":\"44.1765-70.6825\",\"lat\":44.1765,\"lon\":-70.6825,\"weatherTime\":\"2024-01-28T11:15:46-05:00\",\"weatherTimeFormatted\":\"01/28/2024 11:15:46\",\"moon\":{\"phaseIndex\":5,\"phaseName\":\"Waning Gibbous Moon\",\"phaseIcon\":\"waning-gibbous moon\",\"moonriseTime\":\"2024-01-28T19:46:00-05:00\",\"moonriseTimeFormatted\":\"7:46 PM\",\"moonsetTime\":\"2024-01-28T08:44:00-05:00\",\"moonsetTimeFormatted\":\"8:44 AM\"},\"current\":{\"weatherTime\":\"2024-01-28T11:15:46-05:00\",\"weatherTimeFormatted\":\"01/28/2024 11:15:46\",\"sunriseTime\":\"2024-01-28T07:05:17-05:00\",\"sunriseTimeFormatted\":\"7:05 AM\",\"sunsetTime\":\"2024-01-28T16:45:40-05:00\",\"sunsetTimeFormatted\":\"4:45 PM\",\"dayLengthTimeSpan\":\"09:40:23\",\"dayLengthFormatted\":\"9 hours, 40 minutes\",\"temp\":34,\"tempFormatted\":\"34°\",\"dewPoint\":33,\"feelsLike\":34,\"feelsLikeFormatted\":\"34°\",\"windSpeed\":2,\"iconId\":\"04d\",\"main\":\"Clouds\",\"timeOfDay\":2},\"today\":{\"minTemp\":26,\"minTempFormatted\":\"26°\",\"maxTemp\":34,\"maxTempFormatted\":\"34°\",\"description\":\"overcast clouds\",\"summary\":\"Tomorrow: overcast clouds\\nLow: 26° / High: 34°\"},\"tomorrow\":{\"minTemp\":15,\"minTempFormatted\":\"15°\",\"maxTemp\":33,\"maxTempFormatted\":\"33°\",\"description\":\"snow\",\"summary\":\"Tomorrow: snow\\nLow: 15° / High: 33°\"}}";
+        //var weatherData = "{\"id\":\"44.1765-70.6825\",\"lat\":44.1765,\"lon\":-70.6825,\"weatherTime\":\"2024-01-28T11:15:46-05:00\",\"weatherTimeFormatted\":\"01/28/2024 11:15:46\",\"moon\":{\"phaseIndex\":5,\"phaseName\":\"Waning Gibbous Moon\",\"phaseIcon\":\"waning-gibbous moon\",\"moonriseTime\":\"2024-01-28T19:46:00-05:00\",\"moonriseTimeFormatted\":\"7:46 PM\",\"moonsetTime\":\"2024-01-28T08:44:00-05:00\",\"moonsetTimeFormatted\":\"8:44 AM\"},\"current\":{\"weatherTime\":\"2024-01-28T11:15:46-05:00\",\"weatherTimeFormatted\":\"01/28/2024 11:15:46\",\"sunriseTime\":\"2024-01-28T07:05:17-05:00\",\"sunriseTimeFormatted\":\"7:05 AM\",\"sunsetTime\":\"2024-01-28T16:45:40-05:00\",\"sunsetTimeFormatted\":\"4:45 PM\",\"dayLengthTimeSpan\":\"09:40:23\",\"dayLengthFormatted\":\"9 hours, 40 minutes\",\"temp\":34,\"tempFormatted\":\"34°\",\"dewPoint\":33,\"feelsLike\":34,\"feelsLikeFormatted\":\"34°\",\"windSpeed\":2,\"iconId\":\"04d\",\"main\":\"Clouds\",\"timeOfDay\":2},\"today\":{\"minTemp\":26,\"minTempFormatted\":\"26°\",\"maxTemp\":34,\"maxTempFormatted\":\"34°\",\"description\":\"overcast clouds\",\"summary\":\"Tomorrow: overcast clouds\\nLow: 26° / High: 34°\"},\"tomorrow\":{\"minTemp\":15,\"minTempFormatted\":\"15°\",\"maxTemp\":33,\"maxTempFormatted\":\"33°\",\"description\":\"snow\",\"summary\":\"Tomorrow: snow\\nLow: 15° / High: 33°\"}}";
         var x = JsonSerializer.Deserialize<WeatherItem?>(weatherData);
         return x;
     }
