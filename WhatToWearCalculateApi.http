@@ -1,0 +1,6 @@
+@WhatToWearCalculateApi_HostAddress = http://localhost:5248
+
+GET {{WhatToWearCalculateApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
